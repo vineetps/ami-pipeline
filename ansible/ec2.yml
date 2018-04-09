@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Finding the ami
+    ec2_ami_find:
+      name: "packer-linux*"
+      owner: 279617892825
+      region: eu-west-1
+      sort: name
+      sort_order: ascending
+      sort_end: 1
+    register: ami_find
+  - debug:
+      msg: "{{ ami_find.results[0].ami_id }}"
+  - name: Launch EC2 instance
+    ec2:
+      image: "{{ ami_find.results[0].ami_id }}"
+      instance_type: t2.micro
+      key_name: israr-sandpit-key
+      region: eu-west-1
+      instance_tags: '{"Compliance":"Assessment","Creator":"Israrul Haque"}'
+      wait: yes
+...
