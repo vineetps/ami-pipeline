@@ -5,7 +5,7 @@ pipeline {
         stage('Preparation') {
             steps {
                 echo 'Fetching files from git..'
-                git credentialsId: '503fcf64-4e6c-4a2e-b94e-f67b27852fad', url: 'git@34.240.248.104:AWSAdoption/Toolsintegration.git'
+                git credentialsId: '503fcf64-4e6c-4a2e-b94e-f67b27852fad', url: 'https://github.com/hisrarul/ami-pipeline.git'
                 
             }
         }
