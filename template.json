@@ -1,0 +1,68 @@
+{
+ "variables":{
+	"aws_access_key": "{{env `aws_access_key`}}",
+    	"aws_secret_key": "{{env `aws_secret_key`}}"
+	},
+  "provisioners": [  
+  {
+	"type": "shell",
+	"inline": [
+		"sudo su",
+		"sudo yum -y install wget unzip",
+		"sudo easy_install pip",
+		"sudo yum install gcc libffi-devel python-devel openssl-devel -y",
+		"sudo pip install ansible==2.4.3.0",
+		"sudo wget https://d1wk0tztpsntt1.cloudfront.net/linux/latest/install",
+		"sudo bash install",
+		"rm -rf install",
+		"sudo pip install awscli --upgrade --user",
+		"sudo yum install perl-Switch perl-DateTime perl-Sys-Syslog perl-LWP-Protocol-https perl-Digest-SHA.x86_64 -y",
+		"mkdir aws-cloudwatch",
+		"cd aws-cloudwatch",
+		"sudo curl http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip -O",
+		"unzip CloudWatchMonitoringScripts-1.2.1.zip",
+		"rm CloudWatchMonitoringScripts-1.2.1.zip",
+		"cd /tmp",
+		"sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm",
+		"sudo systemctl start amazon-ssm-agent",
+		"sudo systemctl enable amazon-ssm-agent",
+		"echo PATH=/usr/local/bin:/usr/bin:/root/.local/bin:$PATH|sudo tee -a /etc/bashrc",
+		"sudo tar -cvf /root/etc_bak.tar /etc"
+		]
+  },
+  {
+  "type": "ansible",
+  "playbook_file": "./ansible/playbook.yml"
+   }
+],
+ "builders": [
+	{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "eu-west-1",
+    "source_ami": "ami-c90195b0",
+    "instance_type": "t2.micro",
+    "vpc_id": "vpc-0f75a269",
+    "subnet_id":"subnet-4c2dd82a",
+    "ssh_interface":"private_ip",
+    "ssh_username": "ec2-user",
+    "security_group_id":"sg-fbdf8d81",
+    "ami_name": "packer-linux {{isotime \"02-Jan-06 03-04 am\"}}",
+	"tags": {
+		"Name":"Packer Linux AMI",
+		"Business Unit":"Enterprise"
+	},
+	"ami_description": "RHEL with Ansible,AWS Inspector Agent,AWS CLI,AWS CloudWatch Monitoring Scripts,AWS SSM Agent.",
+  "associate_public_ip_address": "false"
+    
+	}
+  ],
+"post-processors": [
+{
+  "type": "manifest",
+  "output": "manifest.json",
+  "strip_path": true
+}
+]
+}
