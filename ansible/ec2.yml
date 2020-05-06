@@ -16,8 +16,8 @@
     ec2:
       image: "{{ ami_find.results[0].ami_id }}"
       instance_type: t2.micro
-      key_name: israr-sandpit-key
+      key_name: key
       region: eu-west-1
-      instance_tags: '{"Compliance":"Assessment","Creator":"Israrul Haque"}'
+      instance_tags: '{"Compliance":"Assessment","Creator":"Vineet"}'
       wait: yes
 ...
